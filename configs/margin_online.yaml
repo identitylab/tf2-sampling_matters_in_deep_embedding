@@ -1,11 +1,9 @@
 # general
-samples_per_class: 4
-classes_per_batch: 55
-batch_size: 220
+batch_size: 128
 eval_batch_size: 200
-input_size: 112
+input_size: 28
 # embd_shape is for the Resnet, backbone
-embd_shape: 512
+embd_shape: 128
 #iom_res50_twostage_triplet -- only two stage with triplet loss
 #iom_res50_twostage_triplet and quantization loss -- triplet loss + quantization loss, this in another config file
 sub_name: 'margin_online'
@@ -17,16 +15,9 @@ is_ccrop: False # central-cropping or not
 alpha: 50
 beta_0: 0.6
 
-# train /media/xingbo/Storage/facedata/vgg_mtcnnpy_160 ./data/split /media/xingbo/Storage/facedata/ms1m_align_112/imgs
-train_dataset: '/home/xingbo/facedata/ms1m_align_112/imgs'
-#train_dataset: '/media/xingbo/Storage/facedata/vgg_mtcnnpy_160'
-img_ext: 'jpg'
-dataset_ext: 'ms'
 # for metric learning, we have 1. triplet_semi batch_hard_triplet 2. batch_all_triplet_loss 3. batch_all_arc_triplet_loss 4 margin_loss
 loss_fun: 'margin_loss'
-triplet_margin: 1
-binary_img: False
-num_classes: 15
+num_classes: 10
 # I generate 1 milion triplets
 num_samples: 3000000
 epochs: 50
