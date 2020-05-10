@@ -4,10 +4,10 @@ import os
 import tensorflow as tf
 import time
 from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
-
 from modules.models import ModelMLossHead
 from modules.utils import set_memory_growth, load_yaml, get_ckpt_inf
 import modules.Mnist as Mnist
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 flags.DEFINE_string('cfg_path', './configs/margin_loss.py', 'config file path')
 flags.DEFINE_string('gpu', '0', 'which gpu to use')
@@ -32,10 +32,25 @@ def main(_):
                          backbone_type=cfg['backbone_type'],
                          training=True, # here equal false, just get the model without acrHead, to load the model trained by arcface
                          cfg=cfg)
-    mnist_data = Mnist(cfg['batch_size'])
 
-    train_dataset = mnist_data.build_training_data()
-    val_dataset = mnist_data.build_validation_data()
+    mnist_data = Mnist(cfg['batch_size'])
+    n_classes = 10
+
+    input_shape = (cfg['input_size'], cfg['input_size'],3)
+    (x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
+
+    DataGenerator = ImageDataGenerator()
+
+    train_dataset = DataGenerator(x_train, y_train, batch_size=64,
+                                    dim=input_shape,
+                                    n_classes=10,
+                                    to_fit=True, shuffle=True)
+    val_dataset = DataGenerator(x_test, y_test, batch_size=64,
+                                  dim=input_shape,
+                                  n_classes=n_classes,
+                                  to_fit=True, shuffle=True)
+    # train_dataset = mnist_data.build_training_data()
+    # val_dataset = mnist_data.build_validation_data()
     dataset_len = cfg['num_samples']
     steps_per_epoch = dataset_len // cfg['batch_size']
 
