@@ -8,8 +8,8 @@ from modules.models import ModelMLossHead
 from modules.utils import set_memory_growth, load_yaml, get_ckpt_inf
 import modules.Mnist as Mnist
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-
-flags.DEFINE_string('cfg_path', './configs/margin_loss.py', 'config file path')
+import modules.DataGenerator as DataGenerator
+flags.DEFINE_string('cfg_path', './configs/margin_online.yaml', 'config file path')
 flags.DEFINE_string('gpu', '0', 'which gpu to use')
 flags.DEFINE_enum('mode', 'eager_tf', ['fit', 'eager_tf'],
                   'fit: model.fit, eager_tf: custom GradientTape')
@@ -39,7 +39,6 @@ def main(_):
     input_shape = (cfg['input_size'], cfg['input_size'],3)
     (x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
 
-    DataGenerator = ImageDataGenerator()
 
     train_dataset = DataGenerator(x_train, y_train, batch_size=64,
                                     dim=input_shape,
