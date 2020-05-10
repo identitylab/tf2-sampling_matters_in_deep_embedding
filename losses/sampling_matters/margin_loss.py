@@ -213,7 +213,7 @@ def margin_loss(embedding, labels, beta, params,cfg,steps,summary_writer):
 
                 with summary_writer.as_default():
                     tf.summary.scalar(
-                        'metric/Map@1', tf.metrics.accuracy(labels, estimated), step=steps)
+                        'metric/Map@1', tf.keras.metrics.accuracy(labels, estimated), step=steps)
 
 
     return loss
