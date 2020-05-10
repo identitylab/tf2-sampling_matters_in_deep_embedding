@@ -1,14 +1,11 @@
 # general
-batch_size: 64
+batch_size: 128
 eval_batch_size: 200
 input_size: 32
-# embd_shape is for the Resnet, backbone
+# embd_shape is for the Resnet,VGG16 backbone
 embd_shape: 128
-#iom_res50_twostage_triplet -- only two stage with triplet loss
-#iom_res50_twostage_triplet and quantization loss -- triplet loss + quantization loss, this in another config file
 sub_name: 'margin_online'
 backbone_type: 'VGG16' # 'ResNet50', 'MobileNetV2'
-head_type: IoMHead # 'ArcHead', 'NormHead'
 is_ccrop: False # central-cropping or not
 
 #margin loss
@@ -23,4 +20,4 @@ num_samples: 50000
 epochs: 50
 base_lr: 0.01
 w_decay: !!float 5e-4
-save_steps: 1000
+save_steps: 5000
