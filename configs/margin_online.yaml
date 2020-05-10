@@ -5,7 +5,7 @@ input_size: 32
 # embd_shape is for the Resnet,VGG16 backbone
 embd_shape: 128
 sub_name: 'margin_online'
-backbone_type: 'VGG16' # 'ResNet50', 'MobileNetV2'
+backbone_type: 'AlexNet' # 'ResNet50', 'MobileNetV2' AlexNet
 is_ccrop: False # central-cropping or not
 
 #margin loss

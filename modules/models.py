@@ -11,6 +11,7 @@ from tensorflow.keras.applications import (
     ResNet50
 )
 from modules.VGG16 import VGG16
+from modules.SimpleNet import SimpleNet
 
 from .layers import (
     BatchNormalization,
@@ -35,6 +36,8 @@ def Backbone(backbone_type='ResNet50', use_pretrain=True):
                                weights=weights)(x_in)
         elif backbone_type == 'VGG16':
             return VGG16(x_in.shape[1:], embed_size=512)(x_in)
+        elif backbone_type == 'AlexNet':
+            return SimpleNet(x_in.shape[1:], embed_size=512)(x_in)
         else:
             raise TypeError('backbone_type error!')
     return backbone

@@ -7,7 +7,6 @@ from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 from modules.models import ModelMLossHead
 from modules.utils import set_memory_growth, load_yaml, get_ckpt_inf
 from modules.Cifar import Cifar
-from modules.DataGenerator import DataGenerator
 flags.DEFINE_string('cfg_path', './configs/margin_online.yaml', 'config file path')
 flags.DEFINE_string('gpu', '0', 'which gpu to use')
 flags.DEFINE_enum('mode', 'eager_tf', ['fit', 'eager_tf'],
@@ -40,7 +39,8 @@ def main(_):
 
     learning_rate = tf.constant(cfg['base_lr'])
     # optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
-    optimiser = tf.train.MomentumOptimizer(learning_rate,momentum=0.9, )
+    optimizer = tf.keras.optimizers.SGD(learning_rate=0.01, momentum=0.9)
+    # optimiser = tf.train.MomentumOptimizer(learning_rate,momentum=0.9, )
     for x in model.trainable_weights:
         print("trainable:",x.name)
     print('\n')
