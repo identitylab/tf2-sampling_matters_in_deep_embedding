@@ -33,7 +33,7 @@ def main(_):
                          training=True, # here equal false, just get the model without acrHead, to load the model trained by arcface
                          cfg=cfg)
 
-    mnist_data = Mnist(cfg['batch_size'])
+    mnist_data = Mnist(64)
     n_classes = 10
 
     input_shape = (cfg['input_size'], cfg['input_size'],3)
