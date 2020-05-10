@@ -194,17 +194,26 @@ def margin_loss(embedding, labels, beta, params,cfg,steps,summary_writer):
     loss = (poss_loss + neg_loss + beta_loss)/pairs
     loss = tf.cast(loss,tf.float32)
 
-    with summary_writer.as_default():
-        if add_summary:
-            pos_inds = tf.where(positive_mask)
-            neg_inds = tf.where(tf.math.logical_not(positive_mask))
-            pos_ds = tf.gather_nd(pairwise_distances, pos_inds) * tf.constant(1, tf.float64)
-            neg_ds = tf.gather_nd(pairwise_distances, neg_inds) * tf.constant(1, tf.float64)
-            tf.summary.scalar('margin/' + NEGATIVE_LOSS, neg_loss / pairs,step=steps)
-            tf.summary.scalar('margin/' + POSITIVE_LOSS, poss_loss / pairs, step=steps)
-            tf.summary.histogram('margin/' + POSITIVE_DISTANCES, pos_ds, step=steps)
-            tf.summary.histogram('margin/' + NEGATIVE_DISTANCES, neg_ds, step=steps)
-            tf.summary.scalar('margin/' + 'beta', tf.reduce_mean(beta), step=steps)
+    if steps % 10 == 0:
+        with summary_writer.as_default():
+            if add_summary:
+                pos_inds = tf.where(positive_mask)
+                neg_inds = tf.where(tf.math.logical_not(positive_mask))
+                pos_ds = tf.gather_nd(pairwise_distances, pos_inds) * tf.constant(1, tf.float64)
+                neg_ds = tf.gather_nd(pairwise_distances, neg_inds) * tf.constant(1, tf.float64)
+                tf.summary.scalar('margin/' + NEGATIVE_LOSS, neg_loss / pairs, step=steps)
+                tf.summary.scalar('margin/' + POSITIVE_LOSS, poss_loss / pairs, step=steps)
+                tf.summary.histogram('margin/' + POSITIVE_DISTANCES, pos_ds, step=steps)
+                tf.summary.histogram('margin/' + NEGATIVE_DISTANCES, neg_ds, step=steps)
+                tf.summary.scalar('margin/' + 'beta', tf.reduce_mean(beta), step=steps)
+
+                _, top_1 = tf.nn.top_k(pairwise_distances, 2)
+                top_1 = top_1[:, 1]
+                estimated = tf.gather_nd(labels, top_1[:, None])
+
+                with summary_writer.as_default():
+                    tf.summary.scalar(
+                        'metric/Map@1', tf.metrics.accuracy(labels, estimated), step=steps)
 
 
     return loss
