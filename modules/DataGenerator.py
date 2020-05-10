@@ -65,7 +65,7 @@ class DataGenerator(tf.compat.v2.keras.utils.Sequence):
             X[i,] = self.X_data[ID]
 
             # Normalize data
-            X = (X / 255).astype('float32')
+            X = X / 255
 
         return X[:, :, :, np.newaxis]
 
