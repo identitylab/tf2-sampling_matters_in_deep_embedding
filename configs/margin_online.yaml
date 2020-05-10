@@ -1,5 +1,5 @@
 # general
-batch_size: 128
+batch_size: 64
 eval_batch_size: 200
 input_size: 32
 # embd_shape is for the Resnet, backbone
