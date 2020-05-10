@@ -6,7 +6,7 @@ from    tensorflow.keras import regularizers
 class VGG16(models.Model):
 
 
-    def __init__(self, input_shape,num_classes):
+    def __init__(self, input_shape,embed_size=256):
         """
 
         :param input_shape: [32, 32, 3]
@@ -14,7 +14,7 @@ class VGG16(models.Model):
         super(VGG16, self).__init__()
 
         weight_decay = 0.000
-        self.num_classes = num_classes
+        self.num_classes = embed_size
 
         model = models.Sequential()
 
