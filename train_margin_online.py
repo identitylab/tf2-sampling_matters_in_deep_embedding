@@ -8,7 +8,7 @@ from modules.models import ModelMLossHead
 from modules.utils import set_memory_growth, load_yaml, get_ckpt_inf
 import modules.Mnist as Mnist
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-import modules.DataGenerator as DataGenerator
+from modules.DataGenerator import DataGenerator
 flags.DEFINE_string('cfg_path', './configs/margin_online.yaml', 'config file path')
 flags.DEFINE_string('gpu', '0', 'which gpu to use')
 flags.DEFINE_enum('mode', 'eager_tf', ['fit', 'eager_tf'],
