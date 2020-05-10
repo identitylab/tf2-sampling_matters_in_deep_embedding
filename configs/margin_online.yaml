@@ -1,7 +1,7 @@
 # general
 batch_size: 128
 eval_batch_size: 200
-input_size: 28
+input_size: 32
 # embd_shape is for the Resnet, backbone
 embd_shape: 128
 #iom_res50_twostage_triplet -- only two stage with triplet loss
@@ -23,11 +23,4 @@ num_samples: 3000000
 epochs: 50
 base_lr: 0.01
 w_decay: !!float 5e-4
-save_steps: 10000
-q: 2
-# m, the projection length would be m x q
-m: 256
-# test
-test_dataset: './data/test_dataset'
-test_dataset_ytf: './data/test_dataset/aligned_images_DB_YTF/'
-test_dataset_fs: './data/test_dataset/facescrub_images_112x112/'
+save_steps: 1000
