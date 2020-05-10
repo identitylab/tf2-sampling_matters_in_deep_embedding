@@ -10,6 +10,8 @@ from tensorflow.keras.applications import (
     MobileNetV2,
     ResNet50
 )
+from modules.VGG16 import VGG16
+
 from .layers import (
     BatchNormalization,
 )
@@ -17,7 +19,6 @@ from losses.sampling_matters.margin_loss import MarginLossLayer
 
 def _regularizer(weights_decay=5e-4):
     return tf.keras.regularizers.l2(weights_decay)
-
 
 def Backbone(backbone_type='ResNet50', use_pretrain=True):
     """Backbone Model"""
@@ -32,6 +33,8 @@ def Backbone(backbone_type='ResNet50', use_pretrain=True):
         elif backbone_type == 'MobileNetV2':
             return MobileNetV2(input_shape=x_in.shape[1:], include_top=False,
                                weights=weights)(x_in)
+        elif backbone_type == 'VGG16':
+            return VGG16(x_in.shape[1:], 10)(x_in)
         else:
             raise TypeError('backbone_type error!')
     return backbone

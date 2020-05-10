@@ -6,8 +6,7 @@ import time
 from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 from modules.models import ModelMLossHead
 from modules.utils import set_memory_growth, load_yaml, get_ckpt_inf
-import modules.Mnist as Mnist
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from modules.Cifar import Cifar
 from modules.DataGenerator import DataGenerator
 flags.DEFINE_string('cfg_path', './configs/margin_online.yaml', 'config file path')
 flags.DEFINE_string('gpu', '0', 'which gpu to use')
@@ -33,23 +32,9 @@ def main(_):
                          training=True, # here equal false, just get the model without acrHead, to load the model trained by arcface
                          cfg=cfg)
 
-    # mnist_data = Mnist(64)
-    n_classes = 10
-
-    input_shape = (cfg['input_size'], cfg['input_size'],3)
-    (x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
-
-
-    train_dataset = DataGenerator(x_train, y_train, batch_size=64,
-                                    dim=input_shape,
-                                    n_classes=10,
-                                    to_fit=True, shuffle=True)
-    val_dataset = DataGenerator(x_test, y_test, batch_size=64,
-                                  dim=input_shape,
-                                  n_classes=n_classes,
-                                  to_fit=True, shuffle=True)
-    # train_dataset = mnist_data.build_training_data()
-    # val_dataset = mnist_data.build_validation_data()
+    cifar = Cifar(cfg['batch_size'])
+    train_dataset = cifar.build_training_data()
+    val_dataset = cifar.build_validation_data()
     dataset_len = cfg['num_samples']
     steps_per_epoch = dataset_len // cfg['batch_size']
 
@@ -84,6 +69,7 @@ def main(_):
                 start = time.time()
 
             inputs, labels = next(train_dataset) #print(inputs[0][1][:])  labels[2][:]
+
             with tf.GradientTape() as tape:
                 logist = model((inputs, labels), training=True)
                 reg_loss = tf.cast(tf.reduce_sum(model.losses),tf.double)
@@ -146,7 +132,6 @@ def main(_):
                   steps_per_epoch=steps_per_epoch,
                   callbacks=callbacks,
                   initial_epoch=epochs - 1)
-
 
     print("[*] training done!")
 
