@@ -207,13 +207,28 @@ def margin_loss(embedding, labels, beta, params,cfg,steps,summary_writer):
                 tf.summary.histogram('margin/' + NEGATIVE_DISTANCES, neg_ds, step=steps)
                 tf.summary.scalar('margin/' + 'beta', tf.reduce_mean(beta), step=steps)
 
-                _, top_1 = tf.nn.top_k(pairwise_distances, 2)
-                top_1 = top_1[:, 1]
-                estimated = tf.gather_nd(labels, top_1[:, None])
+                predictions = tf.math.exp(-pairwise_distances)
+                _, prediction_indices = tf.nn.top_k(predictions, k=1)
 
+                predicted_label_mat = tf.gather(labels, prediction_indices)
+                label_eq_mat = tf.cast(tf.equal(predicted_label_mat, tf.reshape(labels, (-1, 1))), tf.float32)
+
+                # Compute statistics.
+                num_relevant = tf.reduce_sum(label_eq_mat, axis=1, keepdims=True)
+                true_positives_at_k = tf.cumsum(label_eq_mat, axis=1)
+                retrieved_at_k = tf.cumsum(tf.ones_like(label_eq_mat), axis=1)
+                precision_at_k = true_positives_at_k / retrieved_at_k
+                relevant_at_k = label_eq_mat
+                average_precision = (
+                        tf.reduce_sum(precision_at_k * relevant_at_k, axis=1) /
+                        tf.cast(tf.squeeze(num_relevant), tf.float32))
+                average_precision = tf.clip_by_value(average_precision, 0, 1)
+                average_precision = tf.where(tf.math.is_nan(average_precision), tf.zeros_like(average_precision),
+                                             average_precision)
+                mAP = tf.reduce_mean(average_precision)
                 with summary_writer.as_default():
                     tf.summary.scalar(
-                        'metric/Map@1', tf.keras.metrics.accuracy(labels, estimated), step=steps)
+                        'metric/Map@1', mAP, step=steps)
 
 
     return loss
