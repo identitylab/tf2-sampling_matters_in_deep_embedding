@@ -52,7 +52,7 @@ def OutputLayer(embd_shape, w_decay=5e-4, name='OutputLayer'):
         return Model(inputs, x, name=name)(x_in)
     return output_layer
 
-def MarginLossHead(num_classes=85742, margin=0.5, logist_scale=64, cfg=None,name='MlossHead'):
+def MarginLossHead(num_classes=10, margin=0.5, logist_scale=64, cfg=None,name='MlossHead'):
     """MarginLoss Head"""
     def mloss_head(x_in, y_in):
         x = inputs1 = Input(x_in.shape[1:])

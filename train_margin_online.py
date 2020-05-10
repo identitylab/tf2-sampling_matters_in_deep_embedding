@@ -40,7 +40,7 @@ def main(_):
 
     learning_rate = tf.constant(cfg['base_lr'])
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
-
+    # optimiser = tf.train.MomentumOptimizer(learning_rate,momentum=0.9, )
     for x in model.trainable_weights:
         print("trainable:",x.name)
     print('\n')

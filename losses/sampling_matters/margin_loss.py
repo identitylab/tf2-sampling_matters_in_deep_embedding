@@ -212,7 +212,7 @@ def margin_loss(embedding, labels, beta, params,cfg,steps):
 
 class MarginLossLayer(tf.keras.layers.Layer):
     """ArcMarginPenaltyLogists"""
-    def __init__(self,num_classes= 85742, params=None,cfg=None, **kwargs):
+    def __init__(self,num_classes= 10, params=None,cfg=None, **kwargs):
         super(MarginLossLayer, self).__init__(**kwargs)
         self.num_classes = num_classes
         self.params = params
