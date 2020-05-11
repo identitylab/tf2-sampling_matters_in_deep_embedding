@@ -207,28 +207,28 @@ def margin_loss(embedding, labels, beta, params,cfg,steps,summary_writer):
                 tf.summary.histogram('margin/' + NEGATIVE_DISTANCES, neg_ds, step=steps)
                 tf.summary.scalar('margin/' + 'beta', tf.reduce_mean(beta), step=steps)
 
-                predictions = tf.math.exp(-pairwise_distances)
-                _, prediction_indices = tf.nn.top_k(predictions, k=1)
+                # predictions = tf.math.exp(-pairwise_distances)
+                # _, prediction_indices = tf.nn.top_k(predictions, k=1)
+                #
+                # predicted_label_mat = tf.gather(labels, prediction_indices)
+                # label_eq_mat = tf.cast(tf.equal(predicted_label_mat, tf.reshape(labels, (-1, 1))), tf.float32)
+                #
+                # # Compute statistics.
+                # num_relevant = tf.reduce_sum(label_eq_mat, axis=1, keepdims=True)
+                # true_positives_at_k = tf.cumsum(label_eq_mat, axis=1)
+                # retrieved_at_k = tf.cumsum(tf.ones_like(label_eq_mat), axis=1)
+                # precision_at_k = true_positives_at_k / retrieved_at_k
+                # relevant_at_k = label_eq_mat
+                # average_precision = (
+                #         tf.reduce_sum(precision_at_k * relevant_at_k, axis=1) /
+                #         tf.cast(tf.squeeze(num_relevant), tf.float32))
+                # average_precision = tf.clip_by_value(average_precision, 0, 1)
+                # average_precision = tf.where(tf.math.is_nan(average_precision), tf.zeros_like(average_precision),
+                #                              average_precision)
+                # mAP = tf.reduce_mean(average_precision)
+                # tf.summary.scalar(
+                #     'metric/Map@1', mAP, step=steps)
 
-                predicted_label_mat = tf.gather(labels, prediction_indices)
-                label_eq_mat = tf.cast(tf.equal(predicted_label_mat, tf.reshape(labels, (-1, 1))), tf.float32)
-
-                # Compute statistics.
-                num_relevant = tf.reduce_sum(label_eq_mat, axis=1, keepdims=True)
-                true_positives_at_k = tf.cumsum(label_eq_mat, axis=1)
-                retrieved_at_k = tf.cumsum(tf.ones_like(label_eq_mat), axis=1)
-                precision_at_k = true_positives_at_k / retrieved_at_k
-                relevant_at_k = label_eq_mat
-                average_precision = (
-                        tf.reduce_sum(precision_at_k * relevant_at_k, axis=1) /
-                        tf.cast(tf.squeeze(num_relevant), tf.float32))
-                average_precision = tf.clip_by_value(average_precision, 0, 1)
-                average_precision = tf.where(tf.math.is_nan(average_precision), tf.zeros_like(average_precision),
-                                             average_precision)
-                mAP = tf.reduce_mean(average_precision)
-                with summary_writer.as_default():
-                    tf.summary.scalar(
-                        'metric/Map@1', mAP, step=steps)
 
 
     return loss
@@ -250,7 +250,6 @@ class MarginLossLayer(tf.keras.layers.Layer):
                 'beta_0': cfg['beta_0']# weight
             }
         print("params:",self.params)
-        super(MarginLossLayer, self).__init__(**kwargs)
         self.summary_writer = tf.summary.create_file_writer(
         './logs/' + cfg['sub_name']+"/margin/")
 
@@ -267,3 +266,37 @@ class MarginLossLayer(tf.keras.layers.Layer):
         self.steps = self.steps+1
         self.add_loss(loss)
         return embedding
+
+class MarginLossLayer2(tf.keras.layers.Layer):
+    """ArcMarginPenaltyLogists"""
+    def __init__(self,num_classes= 10, params=None,cfg=None, **kwargs):
+        super(MarginLossLayer2, self).__init__(**kwargs)
+        self.num_classes = num_classes
+        self.params = params
+        self.cfg = cfg
+        self.steps=1
+        if self.params is None:
+            self.params = {
+                'alpha': cfg['alpha'],#50 margin of seperate
+                'nu': 0.,
+                'cutoff': 0.5,
+                'add_summary': True,
+                'beta_0': cfg['beta_0']# weight
+            }
+        print("params:",self.params)
+        self.summary_writer = tf.summary.create_file_writer(
+        './logs/' + cfg['sub_name']+"/margin/")
+
+    def build(self, input_shape):
+        self.betas = self.add_weight(name='beta_margins',
+                                 shape=(self.num_classes),
+                                 initializer=tf.keras.initializers.Constant(self.params['beta_0'] ),
+                                 trainable=True)
+
+
+    def call(self, embedding, labels):
+        loss = margin_loss(embedding,labels, self.betas, self.params,self.cfg,self.steps,self.summary_writer)
+        # print('loss',loss)
+        self.steps = self.steps+1
+        return loss
+

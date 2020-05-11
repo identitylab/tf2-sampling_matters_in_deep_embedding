@@ -17,7 +17,7 @@ class Cifar():
         # (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
         def gen():
             for image, label in zip(x_train, y_train):
-                yield image, tf.squeeze(label)
+                yield image, label[0]
         return gen
 
 
@@ -31,10 +31,10 @@ class Cifar():
         return ds
 
     def validation_generator(self):
-        (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
+        (x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
         def gen():
             for image, label in zip(x_test, y_test):
-                yield image, tf.squeeze(label)
+                yield image, label[0]
         return gen
 
     def build_validation_data(self):

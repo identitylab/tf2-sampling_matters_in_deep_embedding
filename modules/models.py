@@ -36,7 +36,7 @@ def Backbone(backbone_type='ResNet50', use_pretrain=True):
                                weights=weights)(x_in)
         elif backbone_type == 'VGG16':
             return VGG16(x_in.shape[1:], embed_size=512)(x_in)
-        elif backbone_type == 'AlexNet':
+        elif backbone_type == 'SimpleNet':
             return SimpleNet(x_in.shape[1:], embed_size=512)(x_in)
         else:
             raise TypeError('backbone_type error!')
@@ -72,6 +72,14 @@ def NormHead(num_classes, w_decay=5e-4, name='NormHead'):
         return Model(inputs, x, name=name)(x_in)
     return norm_head
 
+def Modelembedding(size=None, channels=3, name='Modelembedding',embd_shape=512, backbone_type='VGG16',
+                 w_decay=5e-4, use_pretrain=True, training=False,cfg=None):
+    """Arc Face Model"""
+    x = inputs = Input([size, size, channels], name='input_image')
+    x = Backbone(backbone_type=backbone_type, use_pretrain=use_pretrain)(x)
+
+    embds = OutputLayer(embd_shape, w_decay=w_decay)(x)
+    return Model(inputs, embds, name=name)
 
 def ModelMLossHead(size=None, channels=3, name='ModelMLossHead',embd_shape=512, backbone_type='ResNet50',
                  w_decay=5e-4, use_pretrain=True, training=False,cfg=None):

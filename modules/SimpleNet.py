@@ -24,7 +24,7 @@ class SimpleNet(models.Model):
         model.add(Flatten())
         model.add(Dense(128, activation='relu'))
         model.add(Dropout(0.5))
-        model.add(Dense(embed_size, activation='softmax'))
+        model.add(Dense(embed_size))
         # Output Layer
 
         self.model = model

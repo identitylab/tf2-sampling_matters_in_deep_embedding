@@ -1,16 +1,16 @@
 # general
-batch_size: 128
+batch_size: 256
 eval_batch_size: 200
 input_size: 32
 # embd_shape is for the Resnet,VGG16 backbone
-embd_shape: 128
+embd_shape: 512
 sub_name: 'margin_online'
-backbone_type: 'AlexNet' # 'ResNet50', 'MobileNetV2' AlexNet
+backbone_type: 'SimpleNet' # 'ResNet50', 'MobileNetV2' AlexNet VGG16
 is_ccrop: False # central-cropping or not
 
 #margin loss
 alpha: 50
-beta_0: 0.6
+beta_0: 1.2
 
 # for metric learning, we have 1. triplet_semi batch_hard_triplet 2. batch_all_triplet_loss 3. batch_all_arc_triplet_loss 4 margin_loss
 loss_fun: 'margin_loss'
